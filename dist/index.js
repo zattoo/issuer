@@ -5941,80 +5941,129 @@ function wrappy (fn, cb) {
 /***/ 351:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const fs = __nccwpck_require__(747);
 const core = __nccwpck_require__(186);
-const util = __nccwpck_require__(669);
-
-const readFile = util.promisify(fs.readFile);
 const {
   context,
   getOctokit,
 } = __nccwpck_require__(438);
 
+const utils = __nccwpck_require__(608);
+
 const run = async () => {
-  const token = core.getInput('token', {required: true});
+  const token = core.getInput('github_token', {required: true});
+  const host = core.getInput('host', {required: true});
+  const title = core.getInput('title', {required: false});
+
   const octokit = getOctokit(token);
+  const {pull_request} = context.payload;
 
-  const sources = core.getInput('host', {required: true});
+  const ticketsDescription = utils.createTicketsDescription(host, pull_request.title, title);
+  const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 
-  const repo = context.payload.repository.name;
-  const owner = context.payload.repository.full_name.split('/')[0];
-  const pullNumber = context.payload.pull_request.number;
-
-  try {
-    const pullRequest = {
-      octokit,
-      owner,
-      repo,
-      pullNumber,
-    };
-    const outputContent = [];
-    const folders = await getFolders(sources);
-
-    await Promise.all(folders.map(async (path) => {
-      const filePaths = await getFilePaths(path, 'md');
-      await Promise.all(filePaths.map(async (filePath) => {
-        const fileContent = await readFile(filePath, {encoding: 'utf-8'});
-        if (fileContent) {
-          outputContent.push(fileContent.trim());
-        }
-      }));
-    }));
-
-    const pullRequestBody = await getPullRequestBody(pullRequest);
-
-    core.debug({folders});
-    core.debug({outputContent});
-    core.debug({pullRequestBody});
-
-    if (outputContent.length) {
-      const body = combineBody(pullRequestBody, outputContent.join('\n'));
-      core.info('Adding output to PR comment');
-      core.debug({body});
-
-      updatePullRequestBody({
-        ...pullRequest,
-        body,
-      });
-    } else if (hasOutput(pullRequestBody)) {
-      const body = combineBody(pullRequestBody);
-      core.info('Cleaning output from PR comment');
-      core.debug({body});
-
-      updatePullRequestBody({
-        ...pullRequest,
-        body,
-      });
-    } else {
-      core.info('Doing nothing, comment does not need new output or clean up');
-    }
-  } catch (error) {
-    core.setFailed(error.message);
-    console.error(error);
-  }
+  await octokit.pulls.update({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    pull_number: pull_request.number,
+    updatedBody,
+  });
 };
 
 run();
+
+
+/***/ }),
+
+/***/ 608:
+/***/ ((module) => {
+
+const SEPARATOR  = ':';
+const TITLE = '### Issuer';
+const TICKETS_BLOCK_START = '<!-- tickets start -->\n';
+const TICKETS_BLOCK_END = '<!-- tickets end -->';
+
+const regex = new RegExp(`${TICKETS_BLOCK_START}(.|\r\n|\n)*${TICKETS_BLOCK_END}`);
+
+/**
+ * @param {string} title
+ * @returns {string[]}
+ */
+const getTicketsFromTitle = (title) => {
+    if (!title.includes(SEPARATOR)) {
+        return null;
+    }
+
+    const ticketsString = title.split(SEPARATOR)[0];
+    return ticketsString
+        .replace(/\s/g, '')
+        .split(',');
+};
+
+/**
+ * @param {string} host
+ * @param {string[]} tickets
+ * @returns {string}
+ */
+const stringifyTickets = (host, tickets) => {
+    if(!tickets) {
+        return null;
+    }
+
+    return tickets.reduce((result, ticket) => {
+        return result + `* ${host}${ticket}\n`;
+    }, '');
+};
+
+/**
+ *
+ * @param {string} host
+ * @param {string} prTitle
+ * @param {string} [title]
+ * @returns {string}
+ */
+const createTicketsDescription = (host = '', prTitle, title = TITLE) => {
+    const ticketsString = stringifyTickets(host, getTicketsFromTitle(prTitle));
+
+    if (!ticketsString) {
+        return TICKETS_BLOCK_START + TICKETS_BLOCK_END;
+    }
+
+    return `${TICKETS_BLOCK_START}${title}\n\n${ticketsString}${TICKETS_BLOCK_END}`;
+};
+
+/**
+ *
+ * @param {string} currentBody
+ * @param {string} ticketsDescription
+ * @returns {string}
+ */
+const updateBody = (currentBody, ticketsDescription) => {
+    if(hasTickets(currentBody)) {
+        return currentBody.replace(regex, ticketsDescription);
+    }
+
+    return currentBody + ticketsDescription;
+};
+
+/**
+ * @param {string} prBody
+ * @returns {boolean}
+ */
+const hasTickets = (prBody) => {
+    return regex.test(prBody);
+};
+
+
+
+module.exports = {
+    createTicketsDescription,
+    hasTickets,
+    getTicketsFromTitle,
+    stringifyTickets,
+    updateBody,
+    TICKETS_BLOCK_END,
+    TICKETS_BLOCK_START,
+    TITLE,
+};
 
 
 /***/ }),
