@@ -5960,6 +5960,7 @@ const run = async () => {
   const {pull_request} = context.payload;
 
   const ticketsDescription = utils.createTicketsDescription(host, pull_request.title, title);
+  core.info(String(utils.hasTickets(pull_request.body)));
   const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 
   await octokit.pulls.update({
