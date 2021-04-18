@@ -19,8 +19,8 @@ const run = async () => {
   const ticketsDescription = utils.createTicketsDescription(host, pull_request.title, title);
   const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 
-  core.info({ticketsDescription});
-  core.info({updatedBody});
+  core.info(ticketsDescription);
+  core.info(updatedBody);
 
 
   core.debug({ticketsDescription});
