@@ -1,35 +1,35 @@
 {
-  "name": "javascript-action",
+  "name": "ticket",
   "version": "1.0.0",
-  "description": "JavaScript Action Template",
-  "main": "index.js",
+  "description": "GitHub Action for adding a link to ticket on PR description from PR title",
+  "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",
-    "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
-    "test": "jest",
-    "all": "npm run lint && npm run prepare && npm run test"
+    "build": "ncc build src/index.js -o dist --source-map --license licenses.txt",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/zattoo/ticket.git"
   },
   "keywords": [
-    "GitHub",
-    "Actions",
-    "JavaScript"
+    "GitHub Actions",
+    "issue tracking",
+    "PR title"
   ],
-  "author": "",
+  "author": "Nitzan Nashi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
+    "url": "https://github.com/zattoo/ticket/issues"
   },
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "https://github.com/zattoo/ticket#readme",
   "dependencies": {
-    "@actions/core": "^1.2.5"
+    "@actions/core": "1.2.7",
+    "@actions/github": "4.0.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.27.0",
-    "eslint": "^7.4.0",
-    "jest": "^26.6.3"
+    "@vercel/ncc": "0.27.0",
+    "eslint": "7.4.0",
+    "jest": "26.6.3"
   }
 }
