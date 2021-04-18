@@ -130,6 +130,6 @@ describe(utils.updateBody.name, () => {
         const prTitle = 'Replace string enums';
         const description = utils.createTicketsDescription(host, prTitle);
 
-        expect(utils.updateBody(body, description)).toBe(body + description);
+        expect(utils.updateBody(body, description)).toBe(body + utils.SPACE + description);
     });
 });

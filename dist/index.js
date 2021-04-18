@@ -5954,20 +5954,13 @@ const run = async () => {
   const host = core.getInput('host', {required: true});
   const title = core.getInput('title', {required: false});
 
-  core.info('Running the Actionx');
+  core.info('Analyzing PR title');
 
   const octokit = getOctokit(token);
   const {pull_request} = context.payload;
 
   const ticketsDescription = utils.createTicketsDescription(host, pull_request.title, title);
   const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
-
-  core.info(ticketsDescription);
-  core.info(updatedBody);
-
-
-  core.debug({ticketsDescription});
-  core.debug({updatedBody});
 
   await octokit.pulls.update({
     owner: context.repo.owner,
@@ -5977,7 +5970,6 @@ const run = async () => {
   });
 
   core.info('Description updated successfully');
-
 };
 
 run();
@@ -5992,6 +5984,7 @@ const SEPARATOR  = ':';
 const TITLE = '### Issuer';
 const TICKETS_BLOCK_START = '<!-- tickets start -->\n';
 const TICKETS_BLOCK_END = '<!-- tickets end -->';
+const SPACE = '\n\n';
 
 const regex = new RegExp(`${TICKETS_BLOCK_START}(.|\r\n|\n)*${TICKETS_BLOCK_END}`);
 
@@ -6053,7 +6046,7 @@ const updateBody = (currentBody, ticketsDescription) => {
         return currentBody.replace(regex, ticketsDescription);
     }
 
-    return currentBody + ticketsDescription;
+    return currentBody + SPACE + ticketsDescription;
 };
 
 /**
@@ -6075,6 +6068,7 @@ module.exports = {
     TICKETS_BLOCK_END,
     TICKETS_BLOCK_START,
     TITLE,
+    SPACE,
 };
 
 

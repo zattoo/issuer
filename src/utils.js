@@ -2,6 +2,7 @@ const SEPARATOR  = ':';
 const TITLE = '### Issuer';
 const TICKETS_BLOCK_START = '<!-- tickets start -->\n';
 const TICKETS_BLOCK_END = '<!-- tickets end -->';
+const SPACE = '\n\n';
 
 const regex = new RegExp(`${TICKETS_BLOCK_START}(.|\r\n|\n)*${TICKETS_BLOCK_END}`);
 
@@ -63,7 +64,7 @@ const updateBody = (currentBody, ticketsDescription) => {
         return currentBody.replace(regex, ticketsDescription);
     }
 
-    return currentBody + ticketsDescription;
+    return currentBody + SPACE + ticketsDescription;
 };
 
 /**
@@ -85,4 +86,5 @@ module.exports = {
     TICKETS_BLOCK_END,
     TICKETS_BLOCK_START,
     TITLE,
+    SPACE,
 };
