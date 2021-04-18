@@ -11,7 +11,7 @@ const run = async () => {
   const host = core.getInput('host', {required: true});
   const title = core.getInput('title', {required: false});
 
-  core.info('Running the Action');
+  core.info('Running the Actionx');
 
   const octokit = getOctokit(token);
   const {pull_request} = context.payload;
