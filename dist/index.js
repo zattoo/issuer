@@ -5984,7 +5984,7 @@ run();
 
 const SEPARATOR  = ':';
 const TITLE = '### Issuer';
-const TICKETS_BLOCK_START = '<!-- tickets start -->\n';
+const TICKETS_BLOCK_START = '<!-- tickets start -->';
 const TICKETS_BLOCK_END = '<!-- tickets end -->';
 const SPACE = '\n\n';
 
@@ -6034,7 +6034,7 @@ const createTicketsDescription = (host = '', prTitle, title = TITLE) => {
         return TICKETS_BLOCK_START + TICKETS_BLOCK_END;
     }
 
-    return `${TICKETS_BLOCK_START}${title}\n\n${ticketsString}${TICKETS_BLOCK_END}`;
+    return `${TICKETS_BLOCK_START}\n${title}${SPACE}${ticketsString}${TICKETS_BLOCK_END}`;
 };
 
 /**

@@ -65,7 +65,7 @@ describe(utils.createTicketsDescription.name, () => {
         const ticketsString = utils.stringifyTickets(host, utils.getTicketsFromTitle(prTitle));
 
         expect(utils.createTicketsDescription(host, prTitle, title))
-            .toBe(`${utils.TICKETS_BLOCK_START}${title}\n\n${ticketsString}${utils.TICKETS_BLOCK_END}`);
+            .toBe(`${utils.TICKETS_BLOCK_START}\n${title}${utils.SPACE}${ticketsString}${utils.TICKETS_BLOCK_END}`);
     });
 
     it('returns description for multiple ticket', () => {
@@ -73,7 +73,7 @@ describe(utils.createTicketsDescription.name, () => {
         const ticketsString = utils.stringifyTickets(host, utils.getTicketsFromTitle(prTitle));
 
         expect(utils.createTicketsDescription(host, prTitle, title))
-            .toBe(`${utils.TICKETS_BLOCK_START}${title}\n\n${ticketsString}${utils.TICKETS_BLOCK_END}`);
+            .toBe(`${utils.TICKETS_BLOCK_START}\n${title}${utils.SPACE}${ticketsString}${utils.TICKETS_BLOCK_END}`);
     });
 
     it('returns description with default Title', () => {
@@ -81,7 +81,7 @@ describe(utils.createTicketsDescription.name, () => {
         const ticketsString = utils.stringifyTickets(host, utils.getTicketsFromTitle(prTitle));
 
         expect(utils.createTicketsDescription(host, prTitle))
-            .toBe(`${utils.TICKETS_BLOCK_START}${utils.TITLE}\n\n${ticketsString}${utils.TICKETS_BLOCK_END}`);
+            .toBe(`${utils.TICKETS_BLOCK_START}\n${utils.TITLE}${utils.SPACE}${ticketsString}${utils.TICKETS_BLOCK_END}`);
     });
 });
 
@@ -123,7 +123,7 @@ describe(utils.updateBody.name, () => {
        const prTitle = 'WEB-2224: Replace string enums';
        const description = utils.createTicketsDescription(host, prTitle);
 
-       expect(utils.updateBody(body, description)).toBe(body + description);
+       expect(utils.updateBody(body, description)).toBe(body + utils.SPACE + description);
    });
 
     it('adds meta even if title doe not include ticket', () => {
