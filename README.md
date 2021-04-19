@@ -22,7 +22,7 @@ Required. Issue tracking host URL
 
 Optional. Default to `### Issuer`
 
-### `varify`
+### `verify`
 
 `boolean`
 
