@@ -56,6 +56,6 @@ jobs:
           github_token: ${{github.token}}
           host: 'https://atlassian.net/browse/'
           title: '### Tickets'
-          varify: true,
+          verify: true,
           ignore_label: '-verify'
 ````
