@@ -1,6 +1,6 @@
 # Issuer
 
-GitHub Action for adding a link to ticket on PR description from PR title
+GitHub Action for adding a link to issue on PR description from PR title
 
 ## Inputs
 
