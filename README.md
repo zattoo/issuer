@@ -34,6 +34,13 @@ Optional. Default to `false`, indicates weather the action should validate the P
 
 Optional. Default to `-verify issuer`, if `validate` set to `true`, when label set, the action will skip verification
 
+## Verifier
+
+The Action can also verify the Pull-request title:
+- It will check that the Title includes an issue
+- It will check that the structure of the title follow a proper format `CODE-XXX [, CODE-XXX]: Title`
+- It can be skipped by using the `ignore_label`
+
 ## Usage Example
 
 ````yaml
