@@ -1,23 +1,27 @@
-const SEPARATOR  = ':';
-const TITLE = '### Issuer';
-const TICKETS_BLOCK_START = '<!-- tickets start -->\n';
-const TICKETS_BLOCK_END = '<!-- tickets end -->';
+const constants = require('./constants');
 
-const regex = new RegExp(`${TICKETS_BLOCK_START}(.|\r\n|\n)*${TICKETS_BLOCK_END}`);
+const blockRegex = new RegExp(`${constants.TICKETS_BLOCK_START}(.|\r\n|\n)*${constants.TICKETS_BLOCK_END}`);
+const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
 
 /**
  * @param {string} title
- * @returns {string[]}
+ * @returns {TicketsFromTitleResponse}
  */
 const getTicketsFromTitle = (title) => {
-    if (!title.includes(SEPARATOR)) {
-        return null;
+    if (!title.includes(constants.SEPARATOR)) {
+        return {error: constants.SEPARATOR_ERROR};
     }
 
-    const ticketsString = title.split(SEPARATOR)[0];
-    return ticketsString
-        .replace(/\s/g, '')
-        .split(',');
+    const ticketsString = title.split(constants.SEPARATOR)[0];
+    const tickets = ticketsString
+        .replace(/,/g, '')
+        .split(' ');
+
+    if(tickets.every((ticket) => codeRegex.test(ticket))) {
+        return {tickets};
+    }
+
+    return {error: constants.CODE_ERROR};
 };
 
 /**
@@ -38,18 +42,18 @@ const stringifyTickets = (host, tickets) => {
 /**
  *
  * @param {string} host
- * @param {string} prTitle
- * @param {string} [title]
+ * @param {string[]} tickets
+ * @param {string} title
  * @returns {string}
  */
-const createTicketsDescription = (host = '', prTitle, title = TITLE) => {
-    const ticketsString = stringifyTickets(host, getTicketsFromTitle(prTitle));
+const createTicketsDescription = (host = '', tickets, title) => {
+    const ticketsString = stringifyTickets(host, tickets);
 
     if (!ticketsString) {
-        return TICKETS_BLOCK_START + TICKETS_BLOCK_END;
+        return constants.TICKETS_BLOCK_START + constants.TICKETS_BLOCK_END;
     }
 
-    return `${TICKETS_BLOCK_START}${title}\n\n${ticketsString}${TICKETS_BLOCK_END}`;
+    return `${constants.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${constants.TICKETS_BLOCK_END}`;
 };
 
 /**
@@ -60,10 +64,10 @@ const createTicketsDescription = (host = '', prTitle, title = TITLE) => {
  */
 const updateBody = (currentBody, ticketsDescription) => {
     if(hasTickets(currentBody)) {
-        return currentBody.replace(regex, ticketsDescription);
+        return currentBody.replace(blockRegex, ticketsDescription);
     }
 
-    return currentBody + ticketsDescription;
+    return currentBody + constants.SPACE + ticketsDescription;
 };
 
 /**
@@ -71,10 +75,8 @@ const updateBody = (currentBody, ticketsDescription) => {
  * @returns {boolean}
  */
 const hasTickets = (prBody) => {
-    return regex.test(prBody);
+    return blockRegex.test(prBody);
 };
-
-
 
 module.exports = {
     createTicketsDescription,
@@ -82,7 +84,10 @@ module.exports = {
     getTicketsFromTitle,
     stringifyTickets,
     updateBody,
-    TICKETS_BLOCK_END,
-    TICKETS_BLOCK_START,
-    TITLE,
 };
+
+/**
+ * @typedef {Object} TicketsFromTitleResponse
+ * @prop {string[]} [tickets]
+ * @prop {string} [error]
+ */
