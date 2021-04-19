@@ -1,32 +1,72 @@
 const utils = require('../utils');
+const constants = require('../constants');
 
 const host = 'https://atlassian.net/browse/';
 
 describe(utils.getTicketsFromTitle.name, () => {
     it('returns tickets for a title with one ticket', () => {
         expect(utils.getTicketsFromTitle('WEB-2298: Amazon SSO'))
-            .toEqual(['WEB-2298']);
+            .toEqual({tickets:['WEB-2298']});
     });
 
     it('returns tickets for a title with multiple tickets', () => {
         expect(utils.getTicketsFromTitle('WEB-2298, WEBTV-3388: Import the correct ZAPI'))
-            .toEqual(['WEB-2298', 'WEBTV-3388']);
+            .toEqual({tickets:['WEB-2298', 'WEBTV-3388']});
     });
 
-    it('returns null for a title without ticket', () => {
+    it('returns error for a title without ticket', () => {
         expect(utils.getTicketsFromTitle('Import the correct ZAPI'))
-            .toEqual(null);
+            .toEqual({error: constants.SEPARATOR_ERROR});
     });
 
-    it('returns empty array for a title with incorrect format', () => {
+    it('returns error for a title with invalid format', () => {
         expect(utils.getTicketsFromTitle('WEBTV-3388 - Import the correct ZAPI'))
-            .toBe(null);
+            .toEqual({error: constants.SEPARATOR_ERROR});
 
         expect(utils.getTicketsFromTitle('Import the correct ZAPI / WEBTV-3388'))
-            .toBe(null);
+            .toEqual({error: constants.SEPARATOR_ERROR});
 
         expect(utils.getTicketsFromTitle('Import the correct ZAPI - WEBTV-3388'))
-            .toBe(null);
+    });
+
+    it('returns error for a title with invalid code format', () => {
+        expect(utils.getTicketsFromTitle('webtv-338: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB-XXX: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB-1XX: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('111-111: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('111-WEV: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB111: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB:111: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB_111: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('wEB_111: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+    });
+
+    it('returns error if one or more of multiple codes is are invalid', () => {
+        expect(utils.getTicketsFromTitle('WEB-111, WEB-2X: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB-111, WEB-2-: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
+
+        expect(utils.getTicketsFromTitle('WEB-X11, WEB-22-: Import the correct ZAPI'))
+            .toEqual({error: constants.CODE_ERROR});
     });
 });
 
@@ -56,44 +96,36 @@ describe(utils.createTicketsDescription.name, () => {
     const title = '### Tickets';
 
     it('returns only meta when no tickets in title', () => {
-       expect(utils.createTicketsDescription(host, 'Import the correct ZAPI', title))
-           .toBe(utils.TICKETS_BLOCK_START + utils.TICKETS_BLOCK_END);
+        expect(utils.createTicketsDescription(host, null, title))
+           .toBe(constants.TICKETS_BLOCK_START + constants.TICKETS_BLOCK_END);
     });
 
     it('returns description for one ticket', () => {
-        const prTitle = 'WEB-35: Import the correct ZAPI';
-        const ticketsString = utils.stringifyTickets(host, utils.getTicketsFromTitle(prTitle));
+        const tickets = ['WEB-35'];
+        const ticketsString = utils.stringifyTickets(host, tickets);
 
-        expect(utils.createTicketsDescription(host, prTitle, title))
-            .toBe(`${utils.TICKETS_BLOCK_START}\n${title}${utils.SPACE}${ticketsString}${utils.TICKETS_BLOCK_END}`);
+        expect(utils.createTicketsDescription(host, tickets, title))
+            .toBe(`${constants.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${constants.TICKETS_BLOCK_END}`);
     });
 
     it('returns description for multiple ticket', () => {
-        const prTitle = 'WEB-35, PO-328S: Import the correct ZAPI';
-        const ticketsString = utils.stringifyTickets(host, utils.getTicketsFromTitle(prTitle));
+        const tickets = ['WEB-35', 'PO-328'];
+        const ticketsString = utils.stringifyTickets(host, tickets);
 
-        expect(utils.createTicketsDescription(host, prTitle, title))
-            .toBe(`${utils.TICKETS_BLOCK_START}\n${title}${utils.SPACE}${ticketsString}${utils.TICKETS_BLOCK_END}`);
-    });
-
-    it('returns description with default Title', () => {
-        const prTitle = 'WEB-35, PO-328S: Import the correct ZAPI';
-        const ticketsString = utils.stringifyTickets(host, utils.getTicketsFromTitle(prTitle));
-
-        expect(utils.createTicketsDescription(host, prTitle))
-            .toBe(`${utils.TICKETS_BLOCK_START}\n${utils.TITLE}${utils.SPACE}${ticketsString}${utils.TICKETS_BLOCK_END}`);
+        expect(utils.createTicketsDescription(host, tickets, title))
+            .toBe(`${constants.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${constants.TICKETS_BLOCK_END}`);
     });
 });
 
 describe(utils.hasTickets.name, () => {
    it('returns true if body contains only meta', () => {
-       const body = `Hello this is a description\n in this PR we will do something ${utils.TICKETS_BLOCK_START}${utils.TICKETS_BLOCK_END}`;
+       const body = `Hello this is a description\n in this PR we will do something ${constants.TICKETS_BLOCK_START}${constants.TICKETS_BLOCK_END}`;
 
        expect(utils.hasTickets(body)).toBe(true);
    });
 
     it('returns true if body contains tickets info', () => {
-        const body = `Hello this is a description\n in this PR we will do something ${utils.TICKETS_BLOCK_START}### Title\n* some ticket here${utils.TICKETS_BLOCK_END}`;
+        const body = `Hello this is a description\n in this PR we will do something ${constants.TICKETS_BLOCK_START}### Title\n* some ticket here${constants.TICKETS_BLOCK_END}`;
 
         expect(utils.hasTickets(body)).toBe(true);
     });
@@ -111,25 +143,24 @@ describe(utils.updateBody.name, () => {
         'This PR is the changes in the `common` project.';
 
    it('update body with current description', () => {
-       const prevTitle = 'WEB-2224: Replace string enums';
-       const prevBody = body + utils.createTicketsDescription(host, prevTitle);
+       const prevTickets = ['WEB-2224'];
+       const prevBody = body + utils.createTicketsDescription(host, prevTickets, constants.TITLE_DEFAULT_VALUE);
 
-       const currentTitle = 'WEB-2224, WEB-2225: Replace string enums';
-       const description = utils.createTicketsDescription(host, currentTitle);
+       const currentTickets = ['WEB-2224', 'WEB-2225'];
+       const description = utils.createTicketsDescription(host, currentTickets, constants.TITLE_DEFAULT_VALUE);
        expect(utils.updateBody(prevBody, description)).toBe(body + description);
    });
 
    it('adds description if not exist on PR description', () => {
-       const prTitle = 'WEB-2224: Replace string enums';
-       const description = utils.createTicketsDescription(host, prTitle);
+       const tickets = ['WEB-2224'];
+       const description = utils.createTicketsDescription(host, tickets, constants.TITLE_DEFAULT_VALUE);
 
-       expect(utils.updateBody(body, description)).toBe(body + utils.SPACE + description);
+       expect(utils.updateBody(body, description)).toBe(body + constants.SPACE + description);
    });
 
     it('adds meta even if title doe not include ticket', () => {
-        const prTitle = 'Replace string enums';
-        const description = utils.createTicketsDescription(host, prTitle);
+        const description = utils.createTicketsDescription(host, null, constants.TITLE_DEFAULT_VALUE);
 
-        expect(utils.updateBody(body, description)).toBe(body + utils.SPACE + description);
+        expect(utils.updateBody(body, description)).toBe(body + constants.SPACE + description);
     });
 });

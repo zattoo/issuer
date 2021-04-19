@@ -1,4 +1,4 @@
-# Ticket
+# Issuer
 
 GitHub Action for adding a link to ticket on PR description from PR title
 
@@ -22,6 +22,18 @@ Required. Issue tracking host URL
 
 Optional. Default to `### Issuer`
 
+### `varify`
+
+`boolean`
+
+Optional. Default to `false`, indicates weather the action should validate the PR title
+
+### `ignore_label`
+
+`string`
+
+Optional. Default to `-verify issuer`, if `validate` set to `true`, when label set, the action will skip verification
+
 ## Usage Example
 
 ````yaml
@@ -32,9 +44,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: zattoo/ticket@v1
+      - uses: zattoo/issuer@v1
         with:
           github_token: ${{github.token}}
           host: 'https://atlassian.net/browse/'
           title: '### Tickets'
+          varify: true,
+          ignore_label: '-verify'
 ````

@@ -5938,6 +5938,34 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 361:
+/***/ ((module) => {
+
+const IGNORE_LABEL_DEFAULT_VALUE = '-verify issuer';
+const SEPARATOR  = ':';
+const SPACE = '\n\n';
+const TITLE_DEFAULT_VALUE = '### Issuer';
+const TICKETS_BLOCK_START = '<!-- tickets start -->';
+const TICKETS_BLOCK_END = '<!-- tickets end -->';
+const VERIFY_DEFAULT_VALUE = false;
+const SEPARATOR_ERROR = 'Separator is missing, structure is invalid, CODE-XXX [, CODE-XXX]: Title';
+const CODE_ERROR = 'One or more tickets code are invalid, CODE-XXX [, CODE-XXX]: Title';
+
+module.exports = {
+    IGNORE_LABEL_DEFAULT_VALUE,
+    SPACE,
+    SEPARATOR,
+    TITLE_DEFAULT_VALUE,
+    TICKETS_BLOCK_END,
+    TICKETS_BLOCK_START,
+    VERIFY_DEFAULT_VALUE,
+    SEPARATOR_ERROR,
+    CODE_ERROR,
+}
+
+
+/***/ }),
+
 /***/ 351:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -5948,30 +5976,59 @@ const {
 } = __nccwpck_require__(438);
 
 const utils = __nccwpck_require__(608);
+const constants = __nccwpck_require__(361);
 
 const run = async () => {
-  const token = core.getInput('github_token', {required: true});
-  const host = core.getInput('host', {required: true});
-  const title = core.getInput('title', {required: false});
+    try {
+        const token = core.getInput('github_token', {required: true});
+        const host = core.getInput('host', {required: true});
+        const title = core.getInput('title', {required: false}) || constants.TITLE_DEFAULT_VALUE;
+        const verify = core.getInput('verify', {required: false}) || constants.VERIFY_DEFAULT_VALUE;
+        const ignoreLabel = core.getInput('ignore_label', {required: false}) || constants.IGNORE_LABEL_DEFAULT_VALUE;
+        const octokit = getOctokit(token);
 
-  core.info('Analyzing PR title');
+        const {pull_request} = context.payload;
+        const labels = context.payload.pull_request.labels.map((label) => label.name);
 
-  const octokit = getOctokit(token);
-  const {pull_request} = context.payload;
+        if(labels.includes(ignoreLabel)) {
+            core.info(`Ignore the action due to label '${ignoreLabel}'`);
+            process.exit(0);
+        }
 
-  const ticketsDescription = utils.createTicketsDescription(host, pull_request.title, title);
-  core.info(pull_request.body);
-  core.info(String(utils.hasTickets(pull_request.body)));
-  const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
+        let isErrored = false;
 
-  await octokit.pulls.update({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    pull_number: pull_request.number,
-    body: updatedBody,
-  });
+        core.info('Analyzing PR title');
 
-  core.info('Description updated successfully');
+        if (verify) {
+            core.info('Action will verify Pull-Request title');
+        }
+
+        const ticketsResponse = utils.getTicketsFromTitle(pull_request.title);
+
+        if (!ticketsResponse.tickets && verify) {
+            core.error(ticketsResponse.error);
+            isErrored = true;
+        }
+
+        const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
+
+        const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
+
+        await octokit.pulls.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: pull_request.number,
+            body: updatedBody,
+        });
+
+        if (isErrored) {
+            core.setFailed('Action errored');
+        } else {
+            core.info('Description updated successfully');
+        }
+    } catch (error) {
+        core.setFailed(error.message);
+    }
 };
 
 run();
@@ -5980,29 +6037,32 @@ run();
 /***/ }),
 
 /***/ 608:
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const SEPARATOR  = ':';
-const TITLE = '### Issuer';
-const TICKETS_BLOCK_START = '<!-- tickets start -->';
-const TICKETS_BLOCK_END = '<!-- tickets end -->';
-const SPACE = '\n\n';
+const constants = __nccwpck_require__(361);
 
-const regex = new RegExp(`${TICKETS_BLOCK_START}(.|\r\n|\n)*${TICKETS_BLOCK_END}`);
+const blockRegex = new RegExp(`${constants.TICKETS_BLOCK_START}(.|\r\n|\n)*${constants.TICKETS_BLOCK_END}`);
+const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
 
 /**
  * @param {string} title
- * @returns {string[]}
+ * @returns {TicketsFromTitleResponse}
  */
 const getTicketsFromTitle = (title) => {
-    if (!title.includes(SEPARATOR)) {
-        return null;
+    if (!title.includes(constants.SEPARATOR)) {
+        return {error: constants.SEPARATOR_ERROR};
     }
 
-    const ticketsString = title.split(SEPARATOR)[0];
-    return ticketsString
-        .replace(/\s/g, '')
-        .split(',');
+    const ticketsString = title.split(constants.SEPARATOR)[0];
+    const tickets = ticketsString
+        .replace(/,/g, '')
+        .split(' ');
+
+    if(tickets.every((ticket) => codeRegex.test(ticket))) {
+        return {tickets};
+    }
+
+    return {error: constants.CODE_ERROR};
 };
 
 /**
@@ -6023,18 +6083,18 @@ const stringifyTickets = (host, tickets) => {
 /**
  *
  * @param {string} host
- * @param {string} prTitle
- * @param {string} [title]
+ * @param {string[]} tickets
+ * @param {string} title
  * @returns {string}
  */
-const createTicketsDescription = (host = '', prTitle, title = TITLE) => {
-    const ticketsString = stringifyTickets(host, getTicketsFromTitle(prTitle));
+const createTicketsDescription = (host = '', tickets, title) => {
+    const ticketsString = stringifyTickets(host, tickets);
 
     if (!ticketsString) {
-        return TICKETS_BLOCK_START + TICKETS_BLOCK_END;
+        return constants.TICKETS_BLOCK_START + constants.TICKETS_BLOCK_END;
     }
 
-    return `${TICKETS_BLOCK_START}\n${title}${SPACE}${ticketsString}${TICKETS_BLOCK_END}`;
+    return `${constants.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${constants.TICKETS_BLOCK_END}`;
 };
 
 /**
@@ -6045,10 +6105,10 @@ const createTicketsDescription = (host = '', prTitle, title = TITLE) => {
  */
 const updateBody = (currentBody, ticketsDescription) => {
     if(hasTickets(currentBody)) {
-        return currentBody.replace(regex, ticketsDescription);
+        return currentBody.replace(blockRegex, ticketsDescription);
     }
 
-    return currentBody + SPACE + ticketsDescription;
+    return currentBody + constants.SPACE + ticketsDescription;
 };
 
 /**
@@ -6056,10 +6116,8 @@ const updateBody = (currentBody, ticketsDescription) => {
  * @returns {boolean}
  */
 const hasTickets = (prBody) => {
-    return regex.test(prBody);
+    return blockRegex.test(prBody);
 };
-
-
 
 module.exports = {
     createTicketsDescription,
@@ -6067,11 +6125,13 @@ module.exports = {
     getTicketsFromTitle,
     stringifyTickets,
     updateBody,
-    TICKETS_BLOCK_END,
-    TICKETS_BLOCK_START,
-    TITLE,
-    SPACE,
 };
+
+/**
+ * @typedef {Object} TicketsFromTitleResponse
+ * @prop {string[]} [tickets]
+ * @prop {string} [error]
+ */
 
 
 /***/ }),
