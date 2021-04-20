@@ -1,4 +1,4 @@
-name: 'Issue Tracker'
+name: 'Issue tracking'
 description: 'GitHub Action for adding a link to ticket on PR description from PR title"'
 inputs:
   github_token:
