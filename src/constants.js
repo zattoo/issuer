@@ -5,8 +5,9 @@ const TITLE_DEFAULT_VALUE = '### Issuer';
 const TICKETS_BLOCK_START = '<!-- tickets start -->';
 const TICKETS_BLOCK_END = '<!-- tickets end -->';
 const VERIFY_DEFAULT_VALUE = false;
-const SEPARATOR_ERROR = 'Separator is missing, structure is invalid, CODE-XXX [, CODE-XXX]: Title';
-const CODE_ERROR = 'One or more tickets code are invalid, CODE-XXX [, CODE-XXX]: Title';
+
+const FORMAT_ERROR = 'Title format is invalid, expected pattern is CODE-XXX [, CODE-XXX]: Title';
+const REFERENCE_ERROR = 'Issuer reference is missing. Expected pattern is CODE-XXX [, CODE-XXX]: Title';
 
 module.exports = {
     IGNORE_LABEL_DEFAULT_VALUE,
@@ -16,6 +17,6 @@ module.exports = {
     TICKETS_BLOCK_END,
     TICKETS_BLOCK_START,
     VERIFY_DEFAULT_VALUE,
-    SEPARATOR_ERROR,
-    CODE_ERROR,
+    FORMAT_ERROR,
+    REFERENCE_ERROR,
 }

@@ -50,7 +50,6 @@ jobs:
     name: Issue tracking
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - uses: zattoo/issuer@v1
         with:
           github_token: ${{github.token}}

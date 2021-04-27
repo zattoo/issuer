@@ -7,9 +7,9 @@ const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
  * @param {string} title
  * @returns {TicketsFromTitleResponse}
  */
-const getTicketsFromTitle = (title) => {
+const getIssuerFromTtitle = (title) => {
     if (!title.includes(constants.SEPARATOR)) {
-        return {error: constants.SEPARATOR_ERROR};
+        return {error: constants.REFERENCE_ERROR};
     }
 
     const ticketsString = title.split(constants.SEPARATOR)[0];
@@ -17,11 +17,15 @@ const getTicketsFromTitle = (title) => {
         .replace(/,/g, '')
         .split(' ');
 
+    if(!tickets) {
+        return {error: constants.REFERENCE_ERROR};
+    }
+
     if(tickets.every((ticket) => codeRegex.test(ticket))) {
         return {tickets};
     }
 
-    return {error: constants.CODE_ERROR};
+    return {error: constants.FORMAT_ERROR};
 };
 
 /**
@@ -81,7 +85,7 @@ const hasTickets = (prBody) => {
 module.exports = {
     createTicketsDescription,
     hasTickets,
-    getTicketsFromTitle,
+    getTicketsFromTitle: getIssuerFromTtitle,
     stringifyTickets,
     updateBody,
 };

@@ -16,57 +16,57 @@ describe(utils.getTicketsFromTitle.name, () => {
 
     it('returns error for a title without ticket', () => {
         expect(utils.getTicketsFromTitle('Import the correct ZAPI'))
-            .toEqual({error: constants.SEPARATOR_ERROR});
+            .toEqual({error: constants.REFERENCE_ERROR});
     });
 
     it('returns error for a title with invalid format', () => {
         expect(utils.getTicketsFromTitle('WEBTV-3388 - Import the correct ZAPI'))
-            .toEqual({error: constants.SEPARATOR_ERROR});
+            .toEqual({error: constants.REFERENCE_ERROR});
 
         expect(utils.getTicketsFromTitle('Import the correct ZAPI / WEBTV-3388'))
-            .toEqual({error: constants.SEPARATOR_ERROR});
+            .toEqual({error: constants.REFERENCE_ERROR});
 
         expect(utils.getTicketsFromTitle('Import the correct ZAPI - WEBTV-3388'))
     });
 
     it('returns error for a title with invalid code format', () => {
         expect(utils.getTicketsFromTitle('webtv-338: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB-XXX: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB-1XX: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('111-111: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('111-WEV: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB111: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB:111: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB_111: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('wEB_111: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
     });
 
     it('returns error if one or more of multiple codes is are invalid', () => {
         expect(utils.getTicketsFromTitle('WEB-111, WEB-2X: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB-111, WEB-2-: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
 
         expect(utils.getTicketsFromTitle('WEB-X11, WEB-22-: Import the correct ZAPI'))
-            .toEqual({error: constants.CODE_ERROR});
+            .toEqual({error: constants.FORMAT_ERROR});
     });
 });
 
