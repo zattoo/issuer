@@ -7,7 +7,7 @@ const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
  * @param {string} title
  * @returns {TicketsFromTitleResponse}
  */
-const getIssuerFromTtitle = (title) => {
+const getIssuerFromTitle = (title) => {
     if (!title.includes(constants.SEPARATOR)) {
         return {error: constants.REFERENCE_ERROR};
     }
@@ -85,7 +85,7 @@ const hasTickets = (prBody) => {
 module.exports = {
     createTicketsDescription,
     hasTickets,
-    getTicketsFromTitle: getIssuerFromTtitle,
+    getIssuerFromTitle,
     stringifyTickets,
     updateBody,
 };

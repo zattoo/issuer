@@ -32,7 +32,7 @@ const run = async () => {
             core.info('Action will verify Pull-Request title');
         }
 
-        const ticketsResponse = utils.getTicketsFromTitle(pull_request.title);
+        const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
 
         if (!ticketsResponse.tickets && verify) {
             core.error(ticketsResponse.error);
