@@ -80,7 +80,7 @@ describe(utils.stringifyTickets.name, () => {
         const ticket = 'WEB-35';
 
         expect(utils.stringifyTickets(host, [ticket]))
-            .toBe(`* ${host}${ticket}\n`);
+            .toBe(`* [${ticket}](${host}${ticket})\n`);
     });
 
     it('returns multiple tickets as a list', () => {
@@ -88,7 +88,7 @@ describe(utils.stringifyTickets.name, () => {
         const ticket2 = 'WEBTV-78';
 
         expect(utils.stringifyTickets(host, [ticket1, ticket2]))
-            .toBe(`* ${host}${ticket1}\n* ${host}${ticket2}\n`);
+            .toBe(`* [${ticket1}](${host}${ticket1})\n* [${ticket2}](${host}${ticket2})\n`);
     });
 });
 

@@ -39,7 +39,7 @@ const stringifyTickets = (host, tickets) => {
     }
 
     return tickets.reduce((result, ticket) => {
-        return result + `* ${host}${ticket}\n`;
+        return result + `* [${ticket}](${host}${ticket})\n`;
     }, '');
 };
 
