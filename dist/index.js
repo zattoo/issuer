@@ -5948,8 +5948,8 @@ const TITLE_DEFAULT_VALUE = '### Issuer';
 const TICKETS_BLOCK_START = '<!-- tickets start -->';
 const TICKETS_BLOCK_END = '<!-- tickets end -->';
 const VERIFY_DEFAULT_VALUE = false;
-const SEPARATOR_ERROR = 'Separator is missing, structure is invalid, CODE-XXX [, CODE-XXX]: Title';
-const CODE_ERROR = 'One or more tickets code are invalid, CODE-XXX [, CODE-XXX]: Title';
+const FORMAT_ERROR = 'Title format is invalid, expected pattern is CODE-XXX [, CODE-XXX]: Title';
+const REFERENCE_ERROR = 'Issuer reference is missing. Expected pattern is CODE-XXX [, CODE-XXX]: Title';
 
 module.exports = {
     IGNORE_LABEL_DEFAULT_VALUE,
@@ -5959,8 +5959,8 @@ module.exports = {
     TICKETS_BLOCK_END,
     TICKETS_BLOCK_START,
     VERIFY_DEFAULT_VALUE,
-    SEPARATOR_ERROR,
-    CODE_ERROR,
+    FORMAT_ERROR,
+    REFERENCE_ERROR,
 }
 
 
@@ -6003,7 +6003,7 @@ const run = async () => {
             core.info('Action will verify Pull-Request title');
         }
 
-        const ticketsResponse = utils.getTicketsFromTitle(pull_request.title);
+        const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
 
         if (!ticketsResponse.tickets && verify) {
             core.error(ticketsResponse.error);
@@ -6048,9 +6048,9 @@ const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
  * @param {string} title
  * @returns {TicketsFromTitleResponse}
  */
-const getTicketsFromTitle = (title) => {
+const getIssuerFromTitle = (title) => {
     if (!title.includes(constants.SEPARATOR)) {
-        return {error: constants.SEPARATOR_ERROR};
+        return {error: constants.REFERENCE_ERROR};
     }
 
     const ticketsString = title.split(constants.SEPARATOR)[0];
@@ -6058,11 +6058,15 @@ const getTicketsFromTitle = (title) => {
         .replace(/,/g, '')
         .split(' ');
 
+    if(!tickets) {
+        return {error: constants.REFERENCE_ERROR};
+    }
+
     if(tickets.every((ticket) => codeRegex.test(ticket))) {
         return {tickets};
     }
 
-    return {error: constants.CODE_ERROR};
+    return {error: constants.FORMAT_ERROR};
 };
 
 /**
@@ -6122,7 +6126,7 @@ const hasTickets = (prBody) => {
 module.exports = {
     createTicketsDescription,
     hasTickets,
-    getTicketsFromTitle,
+    getIssuerFromTitle,
     stringifyTickets,
     updateBody,
 };
