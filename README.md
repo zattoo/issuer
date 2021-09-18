@@ -1,7 +1,6 @@
 # Issuer
 
 GitHub Action for adding a link to issue on pull-request description from pull-request title
-The Action is coupled to JIRA and mostlikely won't work on
 
 ## Inputs
 
@@ -51,13 +50,13 @@ Optional. Default to `false`, Indicates if milestone should be added if availabl
 
 `string`
 
-Required if `milestone` is enabled. JIRA username for authentication
+Required if `milestone` is enabled. Jira username for authentication
 
 ### `jira_token`
 
 `string`
 
-Required if `milestone` is enabled. JIRA token for authentication
+Required if `milestone` is enabled. Jira token for authentication
 
 ## Verifier
 
@@ -68,7 +67,7 @@ The Action can also verify the Pull-request title:
 
 ## Milestones
 
-The Action can add milestones to the PR automatically (currently we support only JIRA)
+The Action can add milestones to the PR automatically (currently supports only Jira)
 - Milestone have to be registered before
 - Milestone name is the same as the `fix version` attached to one of the issues
 
