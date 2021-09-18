@@ -51393,7 +51393,7 @@ const jiraService = __nccwpck_require__(3845);
 
     const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 
-    await octokit.pulls.update({
+    await octokit.rest.pulls.update({
         owner: context.repo.owner,
         repo: context.repo.repo,
         pull_number: pull_request.number,
@@ -51424,7 +51424,7 @@ const jiraService = __nccwpck_require__(3845);
         return;
     }
 
-    const milestones = await octokit.issues.listMilestones({
+    const milestones = await octokit.rest.issues.listMilestones({
         owner: context.repo.owner,
         repo: context.repo.repo,
     });
@@ -51436,7 +51436,7 @@ const jiraService = __nccwpck_require__(3845);
         return;
     }
 
-    await octokit.issues.update({
+    await octokit.rest.issues.update({
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: pull_request.number,
