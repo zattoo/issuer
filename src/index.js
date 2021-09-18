@@ -29,10 +29,10 @@ const jiraService = require('./jira');
         process.exit(0);
     }
 
-    core.info('Analyzing PR title');
+    core.info('Analyzing pull-request title');
 
     if (verify) {
-        core.info('Action will verify Pull-Request title');
+        core.info('Action will verify pull-request title');
     }
 
     const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
@@ -89,6 +89,8 @@ const jiraService = require('./jira');
         issue_number: pull_request.number,
         milestone: milestoneNumber,
     });
+
+    console.log(`Added ${milestoneNumber} as milestone`);
 })().catch((error) => {
     core.setFailed(error);
     process.exit(1);
