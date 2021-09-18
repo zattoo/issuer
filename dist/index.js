@@ -50828,7 +50828,7 @@ const init = (username, password, host) => {
  * @returns {string[]}
  */
 const getVersionsForIssuer = async (issueIds) => {
-    const versions = Promise.all(issueIds.map(async (issueId) => {
+    const versions = await Promise.all(issueIds.map(async (issueId) => {
         const issue = await jira.getIssue(issueId);
 
         if (
