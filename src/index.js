@@ -11,6 +11,7 @@ const jiraService = require('./jira');
 (async () => {
     const token = core.getInput('github_token', {required: true});
     const host = core.getInput('host', {required: true});
+    const pathname = core.getInput('pathname', {required: true});
     const title = core.getInput('title', {required: false}) || constants.TITLE_DEFAULT_VALUE;
     const verify = core.getInput('verify', {required: false}) || constants.VERIFY_DEFAULT_VALUE;
     const ignoreLabel = core.getInput('ignore_label', {required: false}) || constants.IGNORE_LABEL_DEFAULT_VALUE;
@@ -21,7 +22,6 @@ const jiraService = require('./jira');
     const octokit = getOctokit(token);
 
     const {pull_request} = context.payload;
-    const {repo} = context.payload;
     const labels = context.payload.pull_request.labels.map((label) => label.name);
 
     if (labels.includes(ignoreLabel)) {
@@ -41,7 +41,7 @@ const jiraService = require('./jira');
         throw new Error(ticketsResponse.error);
     }
 
-    const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
+    const ticketsDescription = utils.createTicketsDescription(`${host}${pathname}`, ticketsResponse.tickets, title);
 
     const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 

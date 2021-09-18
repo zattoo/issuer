@@ -39,19 +39,19 @@ const stringifyTickets = (host, tickets) => {
     }
 
     return tickets.reduce((result, ticket) => {
-        return result + `* https://${host}/browse/${ticket}\n`;
+        return result + `* https://${host}/${ticket}\n`;
     }, '');
 };
 
 /**
  *
- * @param {string} host
+ * @param {string} path
  * @param {string[]} tickets
  * @param {string} title
  * @returns {string}
  */
-const createTicketsDescription = (host = '', tickets, title) => {
-    const ticketsString = stringifyTickets(host, tickets);
+const createTicketsDescription = (path,  tickets, title) => {
+    const ticketsString = stringifyTickets(path, tickets);
 
     if (!ticketsString) {
         return constants.TICKETS_BLOCK_START + constants.TICKETS_BLOCK_END;

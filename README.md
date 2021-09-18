@@ -1,6 +1,7 @@
 # Issuer
 
-GitHub Action for adding a link to issue on PR description from PR title
+GitHub Action for adding a link to issue on pull-request description from pull-request title
+The Action is coupled to JIRA and mostlikely won't work on
 
 ## Inputs
 
@@ -15,6 +16,12 @@ Required. GitHub Token from action context
 `string`
 
 Required. Issue tracking host URL
+
+### `pathname'
+
+`string`
+
+Required. pathname to issuer
 
 ### `title`
 
@@ -32,14 +39,38 @@ Optional. Default to `false`, indicates weather the action should validate the P
 
 `string`
 
-Optional. Default to `-verify issuer`, if `validate` set to `true`, when label set, the action will skip verification
+Optional. Default to `-issuer`, if `validate` set to `true`, when label set, the action will skip verification
+
+### `milestone`
+
+`boolean`
+
+Optional. Default to `false`, Indicates if milestone should be added if available from issue
+
+### `jira_username`
+
+`string`
+
+Required if `milestone` is enabled. JIRA username for authentication
+
+### `jira_token`
+
+`string`
+
+Required if `milestone` is enabled. JIRA token for authentication
 
 ## Verifier
 
 The Action can also verify the Pull-request title:
 - It will check that the Title includes an issue
 - It will check that the structure of the title follow a proper format `CODE-XXX [, CODE-XXX]: Title`
-- It can be skipped by using the `ignore_label`
+- It can be skipped by using the `-issuer`
+
+## Milestones
+
+The Action can add milestones to the PR automatically (currently we support only JIRA)
+- Milestone have to be registered before
+- Milestone name is the same as the `fix version` attached to one of the issues
 
 ## Usage Example
 
@@ -53,8 +84,12 @@ jobs:
       - uses: zattoo/issuer@v1
         with:
           github_token: ${{github.token}}
-          host: 'https://atlassian.net/browse/'
+          host: 'company.atlassian.net'
+          pathname: '/browse'
           title: '### Tickets'
           verify: true,
           ignore_label: '-verify'
+          milestone: true
+          jira_username: 'you@your-company.com'
+          jira_token: 'abcdefghij1234567890'
 ````

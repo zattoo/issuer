@@ -1,7 +1,7 @@
 const utils = require('../utils');
 const constants = require('../constants');
 
-const host = 'https://atlassian.net/browse/';
+const host = 'atlassian.net/browse';
 
 describe(utils.getIssuerFromTitle.name, () => {
     it('returns tickets for a title with one ticket', () => {
@@ -80,7 +80,7 @@ describe(utils.stringifyTickets.name, () => {
         const ticket = 'WEB-35';
 
         expect(utils.stringifyTickets(host, [ticket]))
-            .toBe(`* ${host}${ticket}\n`);
+            .toBe(`* https://${host}/${ticket}\n`);
     });
 
     it('returns multiple tickets as a list', () => {
@@ -88,7 +88,7 @@ describe(utils.stringifyTickets.name, () => {
         const ticket2 = 'WEBTV-78';
 
         expect(utils.stringifyTickets(host, [ticket1, ticket2]))
-            .toBe(`* ${host}${ticket1}\n* ${host}${ticket2}\n`);
+            .toBe(`* https://${host}/${ticket1}\n* https://${host}/${ticket2}\n`);
     });
 });
 
