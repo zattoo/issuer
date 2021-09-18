@@ -14,7 +14,7 @@ const init = (username, password, host) => {
         host,
         username,
         password,
-        apiVersion: '2',
+        apiVersion: '3',
         strictSSL: true
     });
 };
