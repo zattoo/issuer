@@ -50723,7 +50723,7 @@ const jiraService = __nccwpck_require__(3845);
         return;
     }
 
-    const milestones = await octokit.issues.listMilestonesForRepo({
+    const milestones = await octokit.issues.listMilestones({
         owner: context.repo.owner,
         repo: context.repo.repo,
     });

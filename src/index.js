@@ -76,7 +76,7 @@ const jiraService = require('./jira');
         return;
     }
 
-    const milestones = await octokit.issues.listMilestonesForRepo({
+    const milestones = await octokit.issues.listMilestones({
         owner: context.repo.owner,
         repo: context.repo.repo,
     });
