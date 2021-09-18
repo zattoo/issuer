@@ -46,7 +46,8 @@ const jiraService = require('./jira');
     const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 
     await octokit.pulls.update({
-        ...repo,
+        owner: context.repo.owner,
+        repo: context.repo.repo,
         pull_number: pull_request.number,
         body: updatedBody,
     });
@@ -80,7 +81,10 @@ const jiraService = require('./jira');
         return;
     }
 
-    const milestones = await octokit.issues.listMilestonesForRepo(repo);
+    const milestones = await octokit.issues.listMilestonesForRepo({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+    });
 
     const {number: milestoneNumber} = milestones.data.find(({title}) => title === version) || {};
 
@@ -90,7 +94,8 @@ const jiraService = require('./jira');
     }
 
     await octokit.issues.update({
-        ...repo,
+        owner: context.repo.owner,
+        repo: context.repo.repo,
         issue_number: pull_request.number,
         milestone: milestoneNumber,
     });
