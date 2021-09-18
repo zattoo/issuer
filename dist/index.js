@@ -50714,15 +50714,9 @@ const jiraService = __nccwpck_require__(3845);
         throw new Error('milestone option is enabled but no valid cardinals as been given')
     }
 
-    console.log({jiraUsername, jiraToken, host});
-    try {
-        jiraService.init(jiraUsername, jiraToken, host);
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    jiraService.init(jiraUsername, jiraToken, host);
 
-    console.log(ticketsResponse.tickets);
-    const version = jiraService.getVersion(ticketsResponse.tickets);
+    const version = await jiraService.getVersion(ticketsResponse.tickets);
 
     if (!version) {
         console.log('Couldn\'t find version related to issues');
@@ -50766,7 +50760,7 @@ const JiraApi = __nccwpck_require__(6411);
 let jira;
 
 /**
- * @param {string }username
+ * @param {string } username
  * @param {string} password
  * @param {string} host
  */
@@ -50785,9 +50779,9 @@ const init = (username, password, host) => {
  * @param {string[]} issueIds
  * @returns {string}
  */
-const getVersion = (issueIds) => {
+const getVersion = async (issueIds) => {
     for (const issueId in issueIds) {
-        const issue = jira.getIssue(issueId);
+        const issue = await jira.getIssue(issueId);
 
         if (
             issue &&

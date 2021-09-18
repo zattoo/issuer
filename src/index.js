@@ -67,15 +67,9 @@ const jiraService = require('./jira');
         throw new Error('milestone option is enabled but no valid cardinals as been given')
     }
 
-    console.log({jiraUsername, jiraToken, host});
-    try {
-        jiraService.init(jiraUsername, jiraToken, host);
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    jiraService.init(jiraUsername, jiraToken, host);
 
-    console.log(ticketsResponse.tickets);
-    const version = jiraService.getVersion(ticketsResponse.tickets);
+    const version = await jiraService.getVersion(ticketsResponse.tickets);
 
     if (!version) {
         console.log('Couldn\'t find version related to issues');

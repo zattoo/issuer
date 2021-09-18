@@ -4,7 +4,7 @@ const JiraApi = require('jira-client');
 let jira;
 
 /**
- * @param {string }username
+ * @param {string } username
  * @param {string} password
  * @param {string} host
  */
@@ -23,9 +23,9 @@ const init = (username, password, host) => {
  * @param {string[]} issueIds
  * @returns {string}
  */
-const getVersion = (issueIds) => {
+const getVersion = async (issueIds) => {
     for (const issueId in issueIds) {
-        const issue = jira.getIssue(issueId);
+        const issue = await jira.getIssue(issueId);
 
         if (
             issue &&
