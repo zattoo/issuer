@@ -95,7 +95,7 @@ const jiraService = require('./jira');
         milestone: milestonePayload.number,
     });
 
-    console.log(`Added ${milestonePayload.title} as milestone`);
+    console.log(`Added ${version} as milestone`);
 })().catch((error) => {
     core.setFailed(error);
     process.exit(1);

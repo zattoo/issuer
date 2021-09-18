@@ -8,7 +8,7 @@ inputs:
     description: 'issue tracking host URL'
     required: true
   pathname:
-    description: 'pathname to issuer',
+    description: 'pathname to issuer'
     required: true
   title:
     description: 'Title of the tickets section in the PR description'
