@@ -86,7 +86,7 @@ const jiraService = require('./jira');
     }) || {};
 
     if (!milestonePayload.number) {
-        console.log(`Couldn't find milestone with the title ${milestonePayload.name}`);
+        console.log(`Couldn't find milestone with the title ${milestonePayload.title}`);
         return;
     }
 
@@ -97,7 +97,7 @@ const jiraService = require('./jira');
         milestone: milestonePayload.number,
     });
 
-    console.log(`Added ${milestonePayload.name} as milestone`);
+    console.log(`Added ${milestonePayload.title} as milestone`);
 })().catch((error) => {
     core.setFailed(error);
     process.exit(1);
