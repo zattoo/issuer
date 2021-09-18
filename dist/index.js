@@ -50713,7 +50713,12 @@ const jiraService = __nccwpck_require__(3845);
         throw new Error('milestone option is enabled but no valid cardinals as been given')
     }
 
-    jiraService.init(jiraUsername, jiraToken, host);
+    console.log({jiraUsername, jiraToken, host});
+    try {
+        jiraService.init(jiraUsername, jiraToken, host);
+    } catch (error) {
+        throw new Error(error.message);
+    }
 
     const version = jiraService.getVersion(ticketsResponse.tickets);
 
