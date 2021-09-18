@@ -81,9 +81,9 @@ const jiraService = require('./jira');
         repo: context.repo.repo,
     });
 
-    const {number: milestoneNumber} = milestones.data.find(({title}) => title === version) || {};
+    const milestonePayload = milestones.data.find(({title}) => title === version) || {};
 
-    if (!milestoneNumber) {
+    if (!milestonePayload.number) {
         console.log(`Couldn't find milestone with the title ${version}`);
         return;
     }
@@ -92,10 +92,10 @@ const jiraService = require('./jira');
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: pull_request.number,
-        milestone: milestoneNumber,
+        milestone: milestonePayload.number,
     });
 
-    console.log(`Added ${milestoneNumber} as milestone`);
+    console.log(`Added ${milestonePayload.title} as milestone`);
 })().catch((error) => {
     core.setFailed(error);
     process.exit(1);
