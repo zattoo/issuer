@@ -50825,10 +50825,10 @@ const init = (username, password, host) => {
 
 /**
  * @param {string[]} issueIds
- * @returns {string}
+ * @returns {string[]}
  */
-const getVersion = async (issueIds) => {
-    for (const issueId of issueIds) {
+const getVersionsForIssuer = async (issueIds) => {
+    const versions = Promise.all(issueIds.map(async (issueId) => {
         const issue = await jira.getIssue(issueId);
 
         if (
@@ -50840,14 +50840,16 @@ const getVersion = async (issueIds) => {
         ) {
             return issue.fields.fixVersions[0].name
         }
-    }
 
-    return undefined;
+        return undefined;
+    }));
+
+    return [...new Set(versions)].filter(Boolean);
 };
 
 module.exports = {
     init,
-    getVersion,
+    getVersionsForIssuer,
 };
 
 
@@ -51417,9 +51419,9 @@ const jiraService = __nccwpck_require__(3845);
 
     jiraService.init(jiraUsername, jiraToken, host);
 
-    const version = await jiraService.getVersion(ticketsResponse.tickets);
+    const versions = await jiraService.getVersionsForIssuer(ticketsResponse.tickets);
 
-    if (!version) {
+    if (!versions) {
         console.log('Couldn\'t find version related to issues');
         return;
     }
@@ -51429,10 +51431,12 @@ const jiraService = __nccwpck_require__(3845);
         repo: context.repo.repo,
     });
 
-    const milestonePayload = milestones.data.find(({title}) => title === version) || {};
+    const milestonePayload = milestones.data.find(({title}) => {
+        return versions.includes(title);
+    }) || {};
 
     if (!milestonePayload.number) {
-        console.log(`Couldn't find milestone with the title ${version}`);
+        console.log(`Couldn't find milestone with the title ${milestonePayload.name}`);
         return;
     }
 
@@ -51443,7 +51447,7 @@ const jiraService = __nccwpck_require__(3845);
         milestone: milestonePayload.number,
     });
 
-    console.log(`Added ${version} as milestone`);
+    console.log(`Added ${milestonePayload.name} as milestone`);
 })().catch((error) => {
     core.setFailed(error);
     process.exit(1);

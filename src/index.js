@@ -69,9 +69,9 @@ const jiraService = require('./jira');
 
     jiraService.init(jiraUsername, jiraToken, host);
 
-    const version = await jiraService.getVersion(ticketsResponse.tickets);
+    const versions = await jiraService.getVersionsForIssuer(ticketsResponse.tickets);
 
-    if (!version) {
+    if (!versions) {
         console.log('Couldn\'t find version related to issues');
         return;
     }
@@ -81,10 +81,12 @@ const jiraService = require('./jira');
         repo: context.repo.repo,
     });
 
-    const milestonePayload = milestones.data.find(({title}) => title === version) || {};
+    const milestonePayload = milestones.data.find(({title}) => {
+        return versions.includes(title);
+    }) || {};
 
     if (!milestonePayload.number) {
-        console.log(`Couldn't find milestone with the title ${version}`);
+        console.log(`Couldn't find milestone with the title ${milestonePayload.name}`);
         return;
     }
 
@@ -95,7 +97,7 @@ const jiraService = require('./jira');
         milestone: milestonePayload.number,
     });
 
-    console.log(`Added ${version} as milestone`);
+    console.log(`Added ${milestonePayload.name} as milestone`);
 })().catch((error) => {
     core.setFailed(error);
     process.exit(1);

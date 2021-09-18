@@ -21,10 +21,10 @@ const init = (username, password, host) => {
 
 /**
  * @param {string[]} issueIds
- * @returns {string}
+ * @returns {string[]}
  */
-const getVersion = async (issueIds) => {
-    for (const issueId of issueIds) {
+const getVersionsForIssuer = async (issueIds) => {
+    const versions = Promise.all(issueIds.map(async (issueId) => {
         const issue = await jira.getIssue(issueId);
 
         if (
@@ -36,12 +36,14 @@ const getVersion = async (issueIds) => {
         ) {
             return issue.fields.fixVersions[0].name
         }
-    }
 
-    return undefined;
+        return undefined;
+    }));
+
+    return [...new Set(versions)].filter(Boolean);
 };
 
 module.exports = {
     init,
-    getVersion,
+    getVersionsForIssuer,
 };
