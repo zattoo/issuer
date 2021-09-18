@@ -79,6 +79,7 @@ const jiraService = require('./jira');
     const milestones = await octokit.rest.issues.listMilestones({
         owner: context.repo.owner,
         repo: context.repo.repo,
+        state: 'open',
     });
 
     const milestonePayload = milestones.data.find(({title}) => {
