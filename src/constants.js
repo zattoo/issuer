@@ -1,4 +1,4 @@
-const IGNORE_LABEL_DEFAULT_VALUE = '-verify issuer';
+const IGNORE_LABEL_DEFAULT_VALUE = '-issuer';
 const SEPARATOR  = ':';
 const SPACE = '\n\n';
 const TITLE_DEFAULT_VALUE = '### Issuer';

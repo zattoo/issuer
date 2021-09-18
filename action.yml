@@ -16,6 +16,15 @@ inputs:
   ignore_label:
     description: 'Label name, When label set, the action will skip verification'
     required: false
+  milestone:
+    description: 'Boolean value to indicate if milestone should be added if availble from issue'
+    required: false
+  jira_username:
+    description: 'JIRA username for authentication, required when milestone option is enabled'
+    required: false
+  jira_token:
+    description: 'JIRA token for authentication, required when milestone option is enabled'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
