@@ -74,6 +74,7 @@ const jiraService = require('./jira');
         throw new Error(error.message);
     }
 
+    console.log(ticketsResponse.tickets);
     const version = jiraService.getVersion(ticketsResponse.tickets);
 
     if (!version) {
