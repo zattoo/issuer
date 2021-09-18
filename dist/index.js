@@ -50780,7 +50780,7 @@ const init = (username, password, host) => {
  * @returns {string}
  */
 const getVersion = async (issueIds) => {
-    for (const issueId in issueIds) {
+    for (const issueId of issueIds) {
         const issue = await jira.getIssue(issueId);
 
         if (
@@ -50788,9 +50788,9 @@ const getVersion = async (issueIds) => {
             issue.fields &&
             issue.fields.fixVersions &&
             Array.isArray(issue.fields.fixVersions) &&
-            issue.fields.fixVersions[0].id
+            issue.fields.fixVersions[0].name
         ) {
-            return issue.fields.fixVersions[0].id
+            return issue.fields.fixVersions[0].name
         }
     }
 
