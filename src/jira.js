@@ -34,11 +34,13 @@ const getVersionsForIssuer = async (issueIds) => {
             Array.isArray(issue.fields.fixVersions) &&
             issue.fields.fixVersions[0].name
         ) {
-            return issue.fields.fixVersions[0].name
+            return issue.fields.fixVersions[0].name;
         }
 
         return undefined;
     }));
+
+    console.log(versions);
 
     return [...new Set(versions)].filter(Boolean);
 };
