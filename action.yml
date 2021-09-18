@@ -23,10 +23,10 @@ inputs:
     description: 'Boolean value to indicate if milestone should be added if available from issue'
     required: false
   jira_username:
-    description: 'JIRA username for authentication, required when milestone option is enabled'
+    description: 'Jira username for authentication, required when milestone option is enabled'
     required: false
   jira_token:
-    description: 'JIRA token for authentication, required when milestone option is enabled'
+    description: 'Jira token for authentication, required when milestone option is enabled'
     required: false
 runs:
   using: 'node12'
