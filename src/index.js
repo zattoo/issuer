@@ -53,7 +53,6 @@ const jiraService = require('./jira');
 
     core.info('Description updated successfully');
 
-    console.log(`milestone is set to ${milestone}`);
     if (!milestone) {
         return;
     }
