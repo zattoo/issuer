@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 2.0.0 - Unreleased
 
 ### Changed
-- [#9](https://github.com/zattoo/issuer/issues/9) [breaking-changes] Default label `-ignore issuer` was replaced with `-issuer`
+- [#9](https://github.com/zattoo/issuer/issues/9) [breaking-change] Default label `-ignore issuer` was replaced with `-issuer`
 
 ### Fixed
 - [#8](https://github.com/zattoo/issuer/issues/8) Empty body returns `null` as a string
