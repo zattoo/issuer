@@ -32,7 +32,7 @@ Optional. Default to `false`, indicates weather the action should validate the P
 
 `string`
 
-Optional. Default to `-verify issuer`, if `validate` set to `true`, when label set, the action will skip verification
+Optional. Default to `-issuer`, if `validate` set to `true`, when label set, the action will skip verification
 
 ## Verifier
 
