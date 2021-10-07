@@ -61,25 +61,26 @@ const createTicketsDescription = (host = '', tickets, title) => {
 };
 
 /**
- *
- * @param {string} currentBody
- * @param {string} ticketsDescription
- * @returns {string}
- */
-const updateBody = (currentBody, ticketsDescription) => {
-    if(hasTickets(currentBody)) {
-        return currentBody.replace(blockRegex, ticketsDescription);
-    }
-
-    return currentBody + constants.SPACE + ticketsDescription;
-};
-
-/**
  * @param {string} prBody
  * @returns {boolean}
  */
 const hasTickets = (prBody) => {
     return blockRegex.test(prBody);
+};
+
+/**
+ * @param {string} currentBody
+ * @param {string} ticketsDescription
+ * @returns {string}
+ */
+const updateBody = (currentBody, ticketsDescription) => {
+    const body = currentBody || '';
+
+    if(hasTickets(body)) {
+        return body.replace(blockRegex, ticketsDescription);
+    }
+
+    return body + constants.SPACE + ticketsDescription;
 };
 
 module.exports = {
