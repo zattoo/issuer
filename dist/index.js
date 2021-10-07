@@ -6232,7 +6232,7 @@ const run = async () => {
 
         const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
 
-        await octokit.pulls.update({
+        await octokit.rest.pulls.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: pull_request.number,
