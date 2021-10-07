@@ -1,6 +1,6 @@
 {
   "name": "issuer",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "GitHub Action for adding a link to issue on PR description from PR title",
   "main": "src/index.js",
   "scripts": {
