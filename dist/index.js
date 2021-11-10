@@ -5901,30 +5901,55 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 361:
+/***/ 570:
 /***/ ((module) => {
 
-const IGNORE_LABEL_DEFAULT_VALUE = '-issuer';
-const SEPARATOR  = ':';
-const SPACE = '\n\n';
-const TITLE_DEFAULT_VALUE = '### Issuer';
-const TICKETS_BLOCK_START = '<!-- tickets start -->';
-const TICKETS_BLOCK_END = '<!-- tickets end -->';
 const VERIFY_DEFAULT_VALUE = false;
-const FORMAT_ERROR = 'Title format is invalid, expected pattern is CODE-XXX [, CODE-XXX]: Title';
-const REFERENCE_ERROR = 'Issuer reference is missing. Expected pattern is CODE-XXX [, CODE-XXX]: Title';
+const IGNORE_LABEL_DEFAULT_VALUE = '-issuer';
+const TITLE_DEFAULT_VALUE = '### Issuer';
+const SEPARATOR  = ':';
 
 module.exports = {
     IGNORE_LABEL_DEFAULT_VALUE,
-    SPACE,
+    VERIFY_DEFAULT_VALUE,
     SEPARATOR,
     TITLE_DEFAULT_VALUE,
+}
+
+
+/***/ }),
+
+/***/ 81:
+/***/ ((module) => {
+
+const SPACE = '\n\n';
+const TICKETS_BLOCK_START = '<!-- tickets start -->';
+const TICKETS_BLOCK_END = '<!-- tickets end -->';
+
+module.exports = {
+    SPACE,
     TICKETS_BLOCK_END,
     TICKETS_BLOCK_START,
-    VERIFY_DEFAULT_VALUE,
+}
+
+
+/***/ }),
+
+/***/ 446:
+/***/ ((module) => {
+
+const EXPECTED_PATTERN = 'Expected pattern is CODE-XXX [, CODE-XXX]: Title';
+const FORMAT_ERROR = `Format is invalid. ${EXPECTED_PATTERN}`;
+const REFERENCE_ERROR = `Issuer reference is missing. ${EXPECTED_PATTERN}`;
+const SPACE_ERROR = `Title should have space after the separator. ${EXPECTED_PATTERN}`;
+const UPPERCASE_ERROR = `Title should start with a capital letter. ${EXPECTED_PATTERN}`;
+
+module.exports = {
     FORMAT_ERROR,
     REFERENCE_ERROR,
-}
+    SPACE_ERROR,
+    UPPERCASE_ERROR
+};
 
 
 /***/ }),
@@ -5932,9 +5957,11 @@ module.exports = {
 /***/ 608:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const constants = __nccwpck_require__(361);
+const errors = __nccwpck_require__(446);
+const block = __nccwpck_require__(81);
+const config = __nccwpck_require__(570);
 
-const blockRegex = new RegExp(`${constants.TICKETS_BLOCK_START}(.|\r\n|\n)*${constants.TICKETS_BLOCK_END}`);
+const blockRegex = new RegExp(`${block.TICKETS_BLOCK_START}(.|\r\n|\n)*${block.TICKETS_BLOCK_END}`);
 const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
 
 /**
@@ -5942,24 +5969,33 @@ const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
  * @returns {TicketsFromTitleResponse}
  */
 const getIssuerFromTitle = (title) => {
-    if (!title.includes(constants.SEPARATOR)) {
-        return {error: constants.REFERENCE_ERROR};
+    if (!title.includes(config.SEPARATOR)) {
+        return {error: errors.REFERENCE_ERROR};
     }
 
-    const ticketsString = title.split(constants.SEPARATOR)[0];
+    const [ticketsString, titleString] = title.split(config.SEPARATOR);
     const tickets = ticketsString
         .replace(/,/g, '')
         .split(' ');
 
+
     if(!tickets) {
-        return {error: constants.REFERENCE_ERROR};
+        return {error: errors.REFERENCE_ERROR};
     }
 
-    if(tickets.every((ticket) => codeRegex.test(ticket))) {
-        return {tickets};
+    if(tickets.some((ticket) => !codeRegex.test(ticket))) {
+        return {error: errors.FORMAT_ERROR};
     }
 
-    return {error: constants.FORMAT_ERROR};
+    if(titleString[0] !== ' ') {
+        return {error: errors.SPACE_ERROR};
+    }
+
+    if(titleString[1] !== titleString[1].toUpperCase()) {
+        return {error: errors.UPPERCASE_ERROR};
+    }
+
+    return {tickets};
 };
 
 /**
@@ -5988,10 +6024,10 @@ const createTicketsDescription = (host = '', tickets, title) => {
     const ticketsString = stringifyTickets(host, tickets);
 
     if (!ticketsString) {
-        return constants.TICKETS_BLOCK_START + constants.TICKETS_BLOCK_END;
+        return block.TICKETS_BLOCK_START + block.TICKETS_BLOCK_END;
     }
 
-    return `${constants.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${constants.TICKETS_BLOCK_END}`;
+    return `${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}`;
 };
 
 /**
@@ -6014,7 +6050,7 @@ const updateBody = (currentBody, ticketsDescription) => {
         return body.replace(blockRegex, ticketsDescription);
     }
 
-    return body + constants.SPACE + ticketsDescription;
+    return body + block.SPACE + ticketsDescription;
 };
 
 module.exports = {
@@ -6194,62 +6230,52 @@ const {
 } = __nccwpck_require__(438);
 
 const utils = __nccwpck_require__(608);
-const constants = __nccwpck_require__(361);
+const config = __nccwpck_require__(570);
 
-const run = async () => {
-    try {
-        const token = core.getInput('github_token', {required: true});
-        const host = core.getInput('host', {required: true});
-        const title = core.getInput('title', {required: false}) || constants.TITLE_DEFAULT_VALUE;
-        const verify = core.getInput('verify', {required: false}) || constants.VERIFY_DEFAULT_VALUE;
-        const ignoreLabel = core.getInput('ignore_label', {required: false}) || constants.IGNORE_LABEL_DEFAULT_VALUE;
-        const octokit = getOctokit(token);
+(async () => {
+    const token = core.getInput('github_token', {required: true});
+    const host = core.getInput('host', {required: true});
+    const title = core.getInput('title', {required: false}) || config.TITLE_DEFAULT_VALUE;
+    const verify = core.getInput('verify', {required: false}) || config.VERIFY_DEFAULT_VALUE;
+    const ignoreLabel = core.getInput('ignore_label', {required: false}) || config.IGNORE_LABEL_DEFAULT_VALUE;
+    const octokit = getOctokit(token);
 
-        const {pull_request} = context.payload;
-        const labels = context.payload.pull_request.labels.map((label) => label.name);
+    const {pull_request} = context.payload;
+    const labels = context.payload.pull_request.labels.map((label) => label.name);
 
-        if(labels.includes(ignoreLabel)) {
-            core.info(`Ignore the action due to label '${ignoreLabel}'`);
-            process.exit(0);
-        }
-
-        let isErrored = false;
-
-        core.info('Analyzing PR title');
-
-        if (verify) {
-            core.info('Action will verify Pull-Request title');
-        }
-
-        const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
-
-        if (!ticketsResponse.tickets && verify) {
-            core.error(ticketsResponse.error);
-            isErrored = true;
-        }
-
-        const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
-
-        const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
-
-        await octokit.rest.pulls.update({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: pull_request.number,
-            body: updatedBody,
-        });
-
-        if (isErrored) {
-            core.setFailed('Action errored');
-        } else {
-            core.info('Description updated successfully');
-        }
-    } catch (error) {
-        core.setFailed(error.message);
+    if(labels.includes(ignoreLabel)) {
+        core.info(`Ignore the action due to label '${ignoreLabel}'`);
+        process.exit(0);
     }
-};
 
-run();
+    core.info('Analyzing PR title');
+
+    if (verify) {
+        core.info('Action will verify Pull-Request title');
+    }
+
+    const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
+
+    if (!ticketsResponse.tickets && verify) {
+        core.setFailed(ticketsResponse.error);
+    }
+
+    const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
+
+    const updatedBody = utils.updateBody(pull_request.body, ticketsDescription);
+
+    await octokit.rest.pulls.update({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: pull_request.number,
+        body: updatedBody,
+    });
+
+    core.info('Description updated successfully');
+})().catch((error) => {
+    core.setFailed(error);
+    process.exit(1);
+});
 
 })();
 
