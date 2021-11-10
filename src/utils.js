@@ -1,6 +1,8 @@
-const constants = require('./constants');
+const errors = require('./constants/errors');
+const block = require('./constants/block');
+const config = require('./config');
 
-const blockRegex = new RegExp(`${constants.TICKETS_BLOCK_START}(.|\r\n|\n)*${constants.TICKETS_BLOCK_END}`);
+const blockRegex = new RegExp(`${block.TICKETS_BLOCK_START}(.|\r\n|\n)*${block.TICKETS_BLOCK_END}`);
 const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
 
 /**
@@ -8,24 +10,32 @@ const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
  * @returns {TicketsFromTitleResponse}
  */
 const getIssuerFromTitle = (title) => {
-    if (!title.includes(constants.SEPARATOR)) {
-        return {error: constants.REFERENCE_ERROR};
+    if (!title.includes(config.SEPARATOR)) {
+        return {error: errors.REFERENCE_ERROR};
     }
 
-    const ticketsString = title.split(constants.SEPARATOR)[0];
+    const [ticketsString, titleString] = title.split(config.SEPARATOR);
     const tickets = ticketsString
         .replace(/,/g, '')
         .split(' ');
 
     if(!tickets) {
-        return {error: constants.REFERENCE_ERROR};
+        return {error: errors.REFERENCE_ERROR};
     }
 
     if(tickets.every((ticket) => codeRegex.test(ticket))) {
         return {tickets};
     }
 
-    return {error: constants.FORMAT_ERROR};
+    if(titleString[0] !== ' ') {
+        return {error: errors.SPACE_ERROR};
+    }
+
+    if(titleString[1] !== titleString[1].toUpperCase()) {
+        return {error: errors.UPPERCASE_ERROR};
+    }
+
+    return {error: errors.FORMAT_ERROR};
 };
 
 /**
@@ -54,10 +64,10 @@ const createTicketsDescription = (host = '', tickets, title) => {
     const ticketsString = stringifyTickets(host, tickets);
 
     if (!ticketsString) {
-        return constants.TICKETS_BLOCK_START + constants.TICKETS_BLOCK_END;
+        return block.TICKETS_BLOCK_START + block.TICKETS_BLOCK_END;
     }
 
-    return `${constants.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${constants.TICKETS_BLOCK_END}`;
+    return `${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}`;
 };
 
 /**
@@ -80,7 +90,7 @@ const updateBody = (currentBody, ticketsDescription) => {
         return body.replace(blockRegex, ticketsDescription);
     }
 
-    return body + constants.SPACE + ticketsDescription;
+    return body + block.SPACE + ticketsDescription;
 };
 
 module.exports = {

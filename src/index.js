@@ -5,15 +5,15 @@ const {
 } = require('@actions/github');
 
 const utils = require('./utils');
-const constants = require('./constants');
+const config = require('./config');
 
 const run = async () => {
     try {
         const token = core.getInput('github_token', {required: true});
         const host = core.getInput('host', {required: true});
-        const title = core.getInput('title', {required: false}) || constants.TITLE_DEFAULT_VALUE;
-        const verify = core.getInput('verify', {required: false}) || constants.VERIFY_DEFAULT_VALUE;
-        const ignoreLabel = core.getInput('ignore_label', {required: false}) || constants.IGNORE_LABEL_DEFAULT_VALUE;
+        const title = core.getInput('title', {required: false}) || config.TITLE_DEFAULT_VALUE;
+        const verify = core.getInput('verify', {required: false}) || config.VERIFY_DEFAULT_VALUE;
+        const ignoreLabel = core.getInput('ignore_label', {required: false}) || config.IGNORE_LABEL_DEFAULT_VALUE;
         const octokit = getOctokit(token);
 
         const {pull_request} = context.payload;
