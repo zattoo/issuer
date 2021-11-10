@@ -6257,7 +6257,7 @@ const config = __nccwpck_require__(570);
     const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
 
     if (!ticketsResponse.tickets && verify) {
-        core.error(ticketsResponse.error);
+        core.setFailed(ticketsResponse.error);
     }
 
     const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
@@ -6272,7 +6272,7 @@ const config = __nccwpck_require__(570);
     });
 
     core.info('Description updated successfully');
-    })().catch((error) => {
+})().catch((error) => {
     core.setFailed(error);
     process.exit(1);
 });

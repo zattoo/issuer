@@ -32,7 +32,7 @@ const config = require('./config');
     const ticketsResponse = utils.getIssuerFromTitle(pull_request.title);
 
     if (!ticketsResponse.tickets && verify) {
-        core.error(ticketsResponse.error);
+        core.setFailed(ticketsResponse.error);
     }
 
     const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
@@ -47,7 +47,7 @@ const config = require('./config');
     });
 
     core.info('Description updated successfully');
-    })().catch((error) => {
+})().catch((error) => {
     core.setFailed(error);
     process.exit(1);
 });
