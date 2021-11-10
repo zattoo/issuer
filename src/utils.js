@@ -24,6 +24,10 @@ const getIssuerFromTitle = (title) => {
         return {error: errors.REFERENCE_ERROR};
     }
 
+    if(tickets.some((ticket) => !codeRegex.test(ticket))) {
+        return {error: errors.FORMAT_ERROR};
+    }
+
     if(titleString[0] !== ' ') {
         return {error: errors.SPACE_ERROR};
     }
@@ -32,12 +36,7 @@ const getIssuerFromTitle = (title) => {
         return {error: errors.UPPERCASE_ERROR};
     }
 
-
-    if(tickets.every((ticket) => codeRegex.test(ticket))) {
-        return {tickets};
-    }
-
-    return {error: errors.FORMAT_ERROR};
+    return {tickets};
 };
 
 /**
