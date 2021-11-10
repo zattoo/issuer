@@ -6261,7 +6261,6 @@ const run = async () => {
 
         if (!ticketsResponse.tickets && verify) {
             core.error(ticketsResponse.error);
-            isErrored = true;
         }
 
         const ticketsDescription = utils.createTicketsDescription(host, ticketsResponse.tickets, title);
@@ -6275,11 +6274,7 @@ const run = async () => {
             body: updatedBody,
         });
 
-        if (isErrored) {
-            core.setFailed('Action errored');
-        } else {
-            core.info('Description updated successfully');
-        }
+        core.info('Description updated successfully');
     } catch (error) {
         core.setFailed(error.message);
     }
