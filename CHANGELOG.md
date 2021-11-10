@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.0 - 10.11.2021
+
+### Added
+- [#13](https://github.com/zattoo/issuer/issues/13) Require capitalize from titles
+
 ## 2.0.1 - 07.10.2021
 
 ### Fixed
