@@ -19,12 +19,9 @@ const getIssuerFromTitle = (title) => {
         .replace(/,/g, '')
         .split(' ');
 
+
     if(!tickets) {
         return {error: errors.REFERENCE_ERROR};
-    }
-
-    if(tickets.every((ticket) => codeRegex.test(ticket))) {
-        return {tickets};
     }
 
     if(titleString[0] !== ' ') {
@@ -33,6 +30,11 @@ const getIssuerFromTitle = (title) => {
 
     if(titleString[1] !== titleString[1].toUpperCase()) {
         return {error: errors.UPPERCASE_ERROR};
+    }
+
+
+    if(tickets.every((ticket) => codeRegex.test(ticket))) {
+        return {tickets};
     }
 
     return {error: errors.FORMAT_ERROR};
