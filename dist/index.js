@@ -5906,7 +5906,7 @@ function wrappy (fn, cb) {
 
 const VERIFY_DEFAULT_VALUE = false;
 const IGNORE_LABEL_DEFAULT_VALUE = '-issuer';
-const TITLE_DEFAULT_VALUE = '### Issuer';
+const TITLE_DEFAULT_VALUE = '## Issuer';
 const SEPARATOR  = ':';
 
 module.exports = {
