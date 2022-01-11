@@ -5961,7 +5961,7 @@ const errors = __nccwpck_require__(446);
 const block = __nccwpck_require__(81);
 const config = __nccwpck_require__(570);
 
-const blockRegex = new RegExp(`(\\n)*(\s)*${block.TICKETS_BLOCK_START}(.|\r\n|\n)*${block.TICKETS_BLOCK_END}(s)*(\\n)*`);
+const blockRegex = new RegExp(`(\\n)*(\\s)*${block.TICKETS_BLOCK_START}(.|\r\n|\n)*${block.TICKETS_BLOCK_END}(\\s)*(\\n)*`);
 const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
 
 /**

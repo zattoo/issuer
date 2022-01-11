@@ -2,7 +2,7 @@ const errors = require('./constants/errors');
 const block = require('./constants/block');
 const config = require('./config');
 
-const blockRegex = new RegExp(`(\\n)*(\s)*${block.TICKETS_BLOCK_START}(.|\r\n|\n)*${block.TICKETS_BLOCK_END}(s)*(\\n)*`);
+const blockRegex = new RegExp(`(\\n)*(\\s)*${block.TICKETS_BLOCK_START}(.|\r\n|\n)*${block.TICKETS_BLOCK_END}(\\s)*(\\n)*`);
 const codeRegex = new RegExp(/^[A-Z]+-[0-9]+$/);
 
 /**
