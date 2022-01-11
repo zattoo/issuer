@@ -117,7 +117,7 @@ describe(utils.createTicketsDescription.name, () => {
         const ticketsString = utils.stringifyTickets(host, tickets);
 
         expect(utils.createTicketsDescription(host, tickets, title))
-            .toBe(`${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}`);
+            .toBe(`\n\n${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}\n\n`);
     });
 
     it('returns description for multiple ticket', () => {
@@ -125,7 +125,7 @@ describe(utils.createTicketsDescription.name, () => {
         const ticketsString = utils.stringifyTickets(host, tickets);
 
         expect(utils.createTicketsDescription(host, tickets, title))
-            .toBe(`${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}`);
+            .toBe(`\n\n${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}\n\n`);
     });
 });
 
@@ -167,12 +167,12 @@ describe(utils.updateBody.name, () => {
        const tickets = ['WEB-2224'];
        const description = utils.createTicketsDescription(host, tickets, config.TITLE_DEFAULT_VALUE);
 
-       expect(utils.updateBody(body, description)).toBe(body + block.SPACE + description);
+       expect(utils.updateBody(body, description)).toBe(body + description);
    });
 
     it('adds meta even if title doe not include ticket', () => {
         const description = utils.createTicketsDescription(host, null, config.TITLE_DEFAULT_VALUE);
 
-        expect(utils.updateBody(body, description)).toBe(body + block.SPACE + description);
+        expect(utils.updateBody(body, description)).toBe(body + description);
     });
 });

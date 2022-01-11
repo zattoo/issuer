@@ -68,7 +68,14 @@ const createTicketsDescription = (host = '', tickets, title) => {
         return block.TICKETS_BLOCK_START + block.TICKETS_BLOCK_END;
     }
 
-    return `${block.TICKETS_BLOCK_START}\n${title}\n${ticketsString}${block.TICKETS_BLOCK_END}`;
+    return (
+        '\n\n'
+        + block.TICKETS_BLOCK_START
+        + '\n'
+        + title + '\n'  + ticketsString
+        + block.TICKETS_BLOCK_END
+        + '\n\n'
+    );
 };
 
 /**
@@ -91,7 +98,7 @@ const updateBody = (currentBody, ticketsDescription) => {
         return body.replace(blockRegex, ticketsDescription);
     }
 
-    return body + block.SPACE + ticketsDescription;
+    return body + ticketsDescription;
 };
 
 module.exports = {
