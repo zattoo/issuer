@@ -50,7 +50,7 @@ jobs:
     name: Issue tracking
     runs-on: ubuntu-latest
     steps:
-      - uses: zattoo/issuer@v1
+      - uses: zattoo/issuer@v2
         with:
           github_token: ${{github.token}}
           host: 'https://atlassian.net/browse/'
