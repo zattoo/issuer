@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+- Updated dependencies
+- Updated Node from v16 to v20
+
 ## [2.2.0] - 15.06.2023
 
 - Updated dependencies
