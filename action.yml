@@ -17,7 +17,7 @@ inputs:
     description: 'Label name, When label set, the action will skip verification'
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: external-link
