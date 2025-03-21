@@ -26,7 +26,7 @@ const getIssuerFromTitle = (title) => {
 
     for (const ticket of tickets) {
         if (!codeRegex.test(ticket)) {
-            return { error: `${errors.FORMAT_ERROR}. Found: "${ticket}"` };
+            return { error: `${errors.FORMAT_ERROR}. Found: "${title}"` };
         }
     }
 

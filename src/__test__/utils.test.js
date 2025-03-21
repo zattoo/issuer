@@ -31,44 +31,68 @@ describe(utils.getIssuerFromTitle.name, () => {
         expect(utils.getIssuerFromTitle('Import the correct ZAPI - WEBTV-3388'))
     });
 
-    it('returns error for a title with invalid code format', () => {
-        expect(utils.getIssuerFromTitle('webtv-338: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+    it("returns error for a title with invalid code format", () => {
+        let title = "webtv-338: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB-XXX: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB-XXX: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB-1XX: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB-1XX: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('111-111: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "111-111: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('111-WEV: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "111-WEV: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB111: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB111: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB:111: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB:111: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB_111: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB_111: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('wEB_111: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "wEB_111: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
     });
 
-    it('returns error if one or more of multiple codes is are invalid', () => {
-        expect(utils.getIssuerFromTitle('WEB-111, WEB-2X: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+    it("returns error if one or more of multiple codes is are invalid", () => {
+        let title = "WEB-111, WEB-2X: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB-111, WEB-2-: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB-111, WEB-2-: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
 
-        expect(utils.getIssuerFromTitle('WEB-X11, WEB-22-: Import the correct ZAPI'))
-            .toEqual({error: errors.FORMAT_ERROR});
+        title = "WEB-X11, WEB-22-: Import the correct ZAPI";
+        expect(utils.getIssuerFromTitle(title)).toEqual({
+            error: `${errors.FORMAT_ERROR}. Found: "${title}"`,
+        });
     });
 
     it('returns error if no space after separator', () => {
