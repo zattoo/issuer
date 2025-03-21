@@ -24,8 +24,10 @@ const getIssuerFromTitle = (title) => {
         return {error: errors.REFERENCE_ERROR};
     }
 
-    if(tickets.some((ticket) => !codeRegex.test(ticket))) {
-        return {error: errors.FORMAT_ERROR};
+    for (const ticket of tickets) {
+        if (!codeRegex.test(ticket)) {
+            return { error: `${errors.FORMAT_ERROR}. Found: "${title}"` };
+        }
     }
 
     if(titleString[0] !== ' ') {
